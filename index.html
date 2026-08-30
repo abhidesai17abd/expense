@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#ffffff" id="metaThemeColor" />
+  <title>Ab's Xpense Tracker</title>
+  
+  <!-- CDN Scripts for Charts, Excel, and Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-rgb: 37, 99, 235;
+      --danger: #ef4444;
+      --success: #10b981;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="dark"] {
+      --bg: #090d16;
+      --surface: #131b2e;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --primary: #3b82f6;
+      --primary-rgb: 59, 130, 246;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Container */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* Voice Bar */
+    .voice-section {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .mic-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.4);
+      transition: transform 0.2s ease;
+    }
+
+    .mic-btn.listening {
+      background: var(--danger);
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); }
+    }
+
+    .voice-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    /* Summary Stats */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .stat-val {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-success { background: var(--success); color: #fff; }
+
+    /* Category Budgets List */
+    .budget-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .budget-item:last-child { border-bottom: none; }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    /* Expense List */
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .expense-item:last-child { border-bottom: none; }
+
+    /* Calendar Grid */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .cal-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 4px 0;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.8rem;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .cal-day.active {
+      border-color: var(--primary);
+      background: rgba(var(--primary-rgb), 0.1);
+    }
+
+    .cal-day-expense {
+      font-size: 0.6rem;
+      color: var(--danger);
+      font-weight: bold;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* Bottom Nav Bar */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.7rem;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+  <header>
+    <h1>Ab's Xpense Tracker</h1>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </header>
+
+  <div class="container">
+    
+    <!-- Tab 1: Dashboard / Home -->
+    <div id="tab-home" class="tab-content active">
+      <div class="card voice-section">
+        <button class="mic-btn" id="micBtn" onclick="toggleVoiceInput()">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <p class="voice-hint" id="voiceStatus">Tap mic and say: "Petrol 200" or "Lunch 150"</p>
+      </div>
+
+      <div class="summary-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Spent</div>
+          <div class="stat-val" id="totalSpent">₹0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Budget</div>
+          <div class="stat-val" id="totalBudget">₹0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px;">Quick Manual Add</h3>
+        <form id="expenseForm" onsubmit="addManualExpense(event)">
+          <div class="form-group">
+            <input type="text" id="expDesc" placeholder="Item Name / Detail" required />
+          </div>
+          <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <input type="number" id="expAmount" placeholder="Amount (₹)" required />
+            <select id="expCategory"></select>
+          </div>
+          <div class="form-group">
+            <input type="date" id="expDate" required />
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Expense</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px;">Recent Expenses</h3>
+        <div id="recentExpenseList"></div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Calendar -->
+    <div id="tab-calendar" class="tab-content">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 id="calMonthYear" style="font-size: 1rem;">Calendar</h3>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-secondary" style="padding: 4px 10px; border-radius: 6px;" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="btn-secondary" style="padding: 4px 10px; border-radius: 6px;" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calendarDays"></div>
+      </div>
+
+      <div class="card" id="dayDetailsCard" style="display: none;">
+        <h3 id="selectedDateTitle" style="font-size: 0.95rem; margin-bottom: 10px;">Day Expenses</h3>
+        <div id="selectedDateExpenses"></div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Analytics & Reports -->
+    <div id="tab-analytics" class="tab-content">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="font-size: 1rem;">Monthly Overview</h3>
+          <button class="btn-success" style="padding: 6px 12px; font-size: 0.8rem; width: auto;" onclick="exportToExcel()">
+            <i class="fa-solid fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+        <canvas id="expensePieChart" style="max-height: 250px;"></canvas>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px;">Category Budgets & Limits</h3>
+        <div id="categoryBudgetList"></div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Settings & Categories -->
+    <div id="tab-settings" class="tab-content">
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px;">Manage Categories & Budget</h3>
+        <form onsubmit="addNewCategory(event)">
+          <div class="form-group">
+            <input type="text" id="newCatName" placeholder="Category Name (e.g., Solar, Rent)" required />
+          </div>
+          <div class="form-group">
+            <input type="number" id="newCatBudget" placeholder="Monthly Budget (₹)" required />
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-folder-plus"></i> Save Category</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px;">Existing Categories</h3>
+        <div id="categoriesSettingsList"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('home', this)">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('calendar', this)">
+      <i class="fa-solid fa-calendar-days"></i>
+      <span>Calendar</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('analytics', this)">
+      <i class="fa-solid fa-chart-pie"></i>
+      <span>Analytics</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('settings', this)">
+      <i class="fa-solid fa-gear"></i>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <script>
+    // State initialization
+    let expenses = JSON.parse(localStorage.getItem('abs_expenses')) || [];
+    let categories = JSON.parse(localStorage.getItem('abs_categories')) || [
+      { name: 'Food & Dining', budget: 8000 },
+      { name: 'Fuel & Travel', budget: 4000 },
+      { name: 'Utilities', budget: 5000 },
+      { name: 'Business', budget: 15000 },
+      { name: 'General', budget: 3000 }
+    ];
+
+    let currentCalDate = new Date();
+    let chartInstance = null;
+
+    // Set today's date in manual form
+    document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+
+    // LocalStorage helper
+    function saveData() {
+      localStorage.setItem('abs_expenses', JSON.stringify(expenses));
+      localStorage.setItem('abs_categories', JSON.stringify(categories));
+      renderAll();
+    }
+
+    // Tab Navigation
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      el.classList.add('active');
+
+      if (tabId === 'analytics') renderAnalytics();
+      if (tabId === 'calendar') renderCalendar();
+    }
+
+    // Theme Toggle
+    function toggleTheme() {
+      const body = document.body;
+      const isDark = body.getAttribute('data-theme') === 'dark';
+      body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('metaThemeColor').setAttribute('content', isDark ? '#ffffff' : '#090d16');
+      document.getElementById('themeToggle').innerHTML = isDark ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+      if (chartInstance) renderAnalytics();
+    }
+
+    // Voice Processing (English/Hinglish parsing)
+    function toggleVoiceInput() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Voice recognition is not supported offline on this browser engine. Use Chrome.');
+        return;
+      }
+
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRec();
+      recognition.lang = 'hi-IN'; // Works for Hindi & Indian English mixed sentences
+      recognition.interimResults = false;
+
+      const micBtn = document.getElementById('micBtn');
+      const voiceStatus = document.getElementById('voiceStatus');
+
+      micBtn.classList.add('listening');
+      voiceStatus.innerText = 'Listening... Speak item and amount';
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        voiceStatus.innerText = `Heard: "${transcript}"`;
+        parseAndAddVoiceExpense(transcript);
+      };
+
+      recognition.onerror = () => {
+        micBtn.classList.remove('listening');
+        voiceStatus.innerText = 'Error capturing voice. Tap to retry.';
+      };
+
+      recognition.onend = () => {
+        micBtn.classList.remove('listening');
+      };
+
+      recognition.start();
+    }
+
+    function parseAndAddVoiceExpense(text) {
+      // Extract numbers
+      const numbers = text.match(/\d+/g);
+      if (!numbers) {
+        alert('Could not detect an amount. Please say something like "Petrol 200"');
+        return;
+      }
+      const amount = parseFloat(numbers[numbers.length - 1]);
+
+      // Remove number and extract words for category matching
+      let desc = text.replace(amount, '').replace(/rupaye|rupees|rs|ka|mein|me|ko/gi, '').trim();
+      if (!desc) desc = "Voice Expense";
+
+      // Match category intelligently
+      let selectedCat = categories[0].name;
+      const lowerText = text.toLowerCase();
+      for (let cat of categories) {
+        if (lowerText.includes(cat.name.toLowerCase())) {
+          selectedCat = cat.name;
+          break;
+        }
+      }
+
+      const newExp = {
+        id: Date.now(),
+        desc: desc.charAt(0).toUpperCase() + desc.slice(1),
+        amount: amount,
+        category: selectedCat,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      expenses.unshift(newExp);
+      saveData();
+    }
+
+    // Manual Form Add
+    function addManualExpense(e) {
+      e.preventDefault();
+      const desc = document.getElementById('expDesc').value;
+      const amount = parseFloat(document.getElementById('expAmount').value);
+      const category = document.getElementById('expCategory').value;
+      const date = document.getElementById('expDate').value;
+
+      expenses.unshift({ id: Date.now(), desc, amount, category, date });
+      document.getElementById('expDesc').value = '';
+      document.getElementById('expAmount').value = '';
+      saveData();
+    }
+
+    // Categories Management
+    function addNewCategory(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCatName').value.trim();
+      const budget = parseFloat(document.getElementById('newCatBudget').value);
+
+      if (categories.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+        alert('Category already exists!');
+        return;
+      }
+
+      categories.push({ name, budget });
+      document.getElementById('newCatName').value = '';
+      document.getElementById('newCatBudget').value = '';
+      saveData();
+    }
+
+    function deleteCategory(index) {
+      if (confirm('Delete this category?')) {
+        categories.splice(index, 1);
+        saveData();
+      }
+    }
+
+    function deleteExpense(id) {
+      expenses = expenses.filter(exp => exp.id !== id);
+      saveData();
+    }
+
+    // Render Lists and Dropdowns
+    function renderDropdowns() {
+      const select = document.getElementById('expCategory');
+      select.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    }
+
+    function renderRecentExpenses() {
+      const list = document.getElementById('recentExpenseList');
+      if (expenses.length === 0) {
+        list.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 12px 0;">No expenses added yet.</p>`;
+        return;
+      }
+
+      list.innerHTML = expenses.slice(0, 10).map(exp => `
+        <div class="expense-item">
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem;">${exp.desc}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">${exp.category} • ${exp.date}</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-weight: 700; color: var(--danger);">₹${exp.amount.toLocaleString('en-IN')}</span>
+            <i class="fa-solid fa-trash-can" style="color: var(--text-muted); cursor: pointer; font-size: 0.85rem;" onclick="deleteExpense(${exp.id})"></i>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCategorySettings() {
+      const list = document.getElementById('categoriesSettingsList');
+      list.innerHTML = categories.map((c, i) => `
+        <div class="budget-item">
+          <div>
+            <div style="font-weight: 600;">${c.name}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Budget: ₹${c.budget.toLocaleString('en-IN')}</div>
+          </div>
+          <i class="fa-solid fa-trash" style="color: var(--danger); cursor: pointer;" onclick="deleteCategory(${i})"></i>
+        </div>
+      `).join('');
+    }
+
+    // Calendar
+    function renderCalendar() {
+      const year = currentCalDate.getFullYear();
+      const month = currentCalDate.getMonth();
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      
+      document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const container = document.getElementById('calendarDays');
+      container.innerHTML = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => `<div class="cal-header">${d}</div>`).join('');
+
+      for (let i = 0; i < firstDay; i++) {
+        container.innerHTML += `<div></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayTotal = expenses.filter(e => e.date === formattedDate).reduce((acc, curr) => acc + curr.amount, 0);
+
+        container.innerHTML += `
+          <div class="cal-day" onclick="showDayExpenses('${formattedDate}')">
+            <span>${day}</span>
+            ${dayTotal > 0 ? `<span class="cal-day-expense">₹${dayTotal}</span>` : ''}
+          </div>
+        `;
+      }
+    }
+
+    function changeMonth(delta) {
+      currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function showDayExpenses(date) {
+      const card = document.getElementById('dayDetailsCard');
+      const list = document.getElementById('selectedDateExpenses');
+      const title = document.getElementById('selectedDateTitle');
+
+      const dayList = expenses.filter(e => e.date === date);
+      title.innerText = `Expenses for ${date}`;
+
+      if (dayList.length === 0) {
+        list.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-muted);">No expenses recorded on this date.</p>`;
+      } else {
+        list.innerHTML = dayList.map(e => `
+          <div class="expense-item">
+            <span>${e.desc} (${e.category})</span>
+            <strong style="color: var(--danger);">₹${e.amount}</strong>
+          </div>
+        `).join('');
+      }
+      card.style.display = 'block';
+    }
+
+    // Analytics & Budgets
+    function renderAnalytics() {
+      const currentMonthStr = new Date().toISOString().slice(0, 7);
+      const monthlyExpenses = expenses.filter(e => e.date.startsWith(currentMonthStr));
+      
+      const catTotals = {};
+      categories.forEach(c => catTotals[c.name] = 0);
+      monthlyExpenses.forEach(e => {
+        catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+      });
+
+      // Render Budgets Progress
+      const budgetList = document.getElementById('categoryBudgetList');
+      budgetList.innerHTML = categories.map(cat => {
+        const spent = catTotals[cat.name] || 0;
+        const pct = Math.min(100, Math.round((spent / (cat.budget || 1)) * 100));
+        const color = pct > 90 ? 'var(--danger)' : 'var(--primary)';
+        return `
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 2px;">
+              <span><strong>${cat.name}</strong></span>
+              <span>₹${spent.toLocaleString('en-IN')} / ₹${cat.budget.toLocaleString('en-IN')} (${pct}%)</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Chart
+      const ctx = document.getElementById('expensePieChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      const labels = Object.keys(catTotals).filter(k => catTotals[k] > 0);
+      const dataVals = labels.map(k => catTotals[k]);
+
+      chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels.length ? labels : ['No Expenses'],
+          datasets: [{
+            data: dataVals.length ? dataVals : [1],
+            backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12 } }
+          }
+        }
+      });
+    }
+
+    // Export to Excel (SheetJS)
+    function exportToExcel() {
+      if (expenses.length === 0) {
+        alert('No data to export!');
+        return;
+      }
+      const cleanData = expenses.map(e => ({
+        Date: e.date,
+        Description: e.desc,
+        Category: e.category,
+        "Amount (INR)": e.amount
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(cleanData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
+      XLSX.writeFile(workbook, "Abs_Xpense_Report.xlsx");
+    }
+
+    // Render Global Stats
+    function renderAll() {
+      const total = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+      const budget = categories.reduce((acc, curr) => acc + curr.budget, 0);
+
+      document.getElementById('totalSpent').innerText = `₹${total.toLocaleString('en-IN')}`;
+      document.getElementById('totalBudget').innerText = `₹${budget.toLocaleString('en-IN')}`;
+
+      renderDropdowns();
+      renderRecentExpenses();
+      renderCategorySettings();
+    }
+
+    // Initial Load
+    renderAll();
+  </script>
+</body>
+</html>
