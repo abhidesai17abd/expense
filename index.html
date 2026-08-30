@@ -1,39 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#ffffff" id="metaThemeColor" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Ab's Xpense Tracker</title>
-  
-  <!-- CDN Scripts for Charts, Excel, and Icons -->
+
+  <!-- PWA Standalone Mode Settings -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#2563eb" id="metaThemeColor" />
+
+  <!-- AXT Icon Integration -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%231d4ed8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='128' fill='url(%23g)'/%3E%3Ctext x='50%25' y='54%25' font-family='system-ui,-apple-system,sans-serif' font-weight='900' font-size='160' fill='%23ffffff' dominant-baseline='central' text-anchor='middle'%3EAXT%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%231d4ed8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='128' fill='url(%23g)'/%3E%3Ctext x='50%25' y='54%25' font-family='system-ui,-apple-system,sans-serif' font-weight='900' font-size='160' fill='%23ffffff' dominant-baseline='central' text-anchor='middle'%3EAXT%3C/text%3E%3C/svg%3E" />
+
+  <!-- Dynamic Inline Web App Manifest -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Ab%27s%20Xpense%20Tracker%22%2C%22short_name%22%3A%22AXT%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23ffffff%22%2C%22theme_color%22%3A%22%232563eb%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%253E%253Cdefs%253E%253ClinearGradient%20id%3D%27g%27%20x1%3D%270%2525%27%20y1%3D%270%2525%27%20x2%3D%27100%2525%27%20y2%3D%27100%2525%27%253E%253Cstop%20offset%3D%270%2525%27%20stop-color%3D%27%25233b82f6%27%2F%253E%253Cstop%20offset%3D%27100%2525%27%20stop-color%3D%27%25231d4ed8%27%2F%253E%253C%2FlinearGradient%253E%253C%2Fdefs%253E%253Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27128%27%20fill%3D%27url(%2523g)%27%2F%253E%253Ctext%20x%3D%2750%2525%27%20y%3D%2754%2525%27%20font-family%3D%27system-ui%2C-apple-system%2Csans-serif%27%20font-weight%3D%27900%27%20font-size%3D%27160%27%20fill%3D%27%2523ffffff%27%20dominant-baseline%3D%27central%27%20text-anchor%3D%27middle%27%253EAXT%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D" />
+
+  <!-- Offline Libraries for Visualization & Excel Export -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #f1f5f9;
       --surface: #ffffff;
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
       --primary: #2563eb;
-      --primary-rgb: 37, 99, 235;
+      --primary-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
       --danger: #ef4444;
       --success: #10b981;
-      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --card-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.06);
     }
 
     [data-theme="dark"] {
-      --bg: #090d16;
-      --surface: #131b2e;
+      --bg: #0b0f19;
+      --surface: #141c2e;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #1e293b;
       --primary: #3b82f6;
-      --primary-rgb: 59, 130, 246;
-      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+      --primary-gradient: linear-gradient(135deg, #60a5fa, #2563eb);
+      --card-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
     }
 
     * {
@@ -42,33 +54,52 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding-bottom: 80px;
-      transition: background 0.2s ease, color 0.2s ease;
+      padding-bottom: 95px;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    /* Header */
+    /* App Header */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 16px 20px;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     }
 
-    header h1 {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      background: var(--primary-gradient);
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.9rem;
+      padding: 5px 9px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .brand h1 {
       font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
     }
 
     .theme-toggle {
@@ -84,109 +115,74 @@
       cursor: pointer;
     }
 
-    /* Container */
     .container {
       max-width: 600px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 14px;
     }
 
-    /* Cards */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
       box-shadow: var(--card-shadow);
     }
 
-    /* Voice Bar */
-    .voice-section {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .mic-btn {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: none;
-      background: var(--primary);
-      color: #fff;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.4);
-      transition: transform 0.2s ease;
-    }
-
-    .mic-btn.listening {
-      background: var(--danger);
-      animation: pulse 1.2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
-      100% { transform: scale(1); }
-    }
-
-    .voice-hint {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 10px;
-    }
-
-    /* Summary Stats */
+    /* Overview Highlights */
     .summary-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-gradient);
     }
 
     .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .stat-val {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.35rem;
+      font-weight: 800;
       margin-top: 4px;
     }
 
-    /* Form Fields */
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
+    /* Inputs */
+    .form-group { margin-bottom: 10px; }
 
     input, select {
       width: 100%;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--text);
       font-size: 0.95rem;
       outline: none;
+      user-select: text;
     }
 
     input:focus, select:focus {
@@ -195,11 +191,11 @@
 
     .btn {
       width: 100%;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 13px;
+      border-radius: 12px;
       border: none;
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -207,35 +203,16 @@
       gap: 8px;
     }
 
-    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
     .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
     .btn-success { background: var(--success); color: #fff; }
 
-    /* Category Budgets List */
-    .budget-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .budget-item:last-child { border-bottom: none; }
-
-    .progress-bar-bg {
-      width: 100%;
-      height: 6px;
-      background: var(--border);
-      border-radius: 4px;
-      margin-top: 6px;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.3s ease;
-    }
-
-    /* Expense List */
+    /* Expenses List */
     .expense-item {
       display: flex;
       justify-content: space-between;
@@ -245,18 +222,33 @@
     }
     .expense-item:last-child { border-bottom: none; }
 
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 6px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.3s ease;
+    }
+
     /* Calendar Grid */
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+      gap: 5px;
       text-align: center;
       margin-top: 10px;
     }
 
     .cal-header {
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-muted);
       padding: 4px 0;
     }
@@ -264,33 +256,86 @@
     .cal-day {
       aspect-ratio: 1;
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       font-size: 0.8rem;
       cursor: pointer;
-      position: relative;
-    }
-
-    .cal-day.active {
-      border-color: var(--primary);
-      background: rgba(var(--primary-rgb), 0.1);
+      background: var(--surface);
     }
 
     .cal-day-expense {
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       color: var(--danger);
-      font-weight: bold;
+      font-weight: 800;
       margin-top: 2px;
-      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
     }
 
-    /* Bottom Nav Bar */
+    /* Bottom Floating Voice Mic */
+    .floating-mic-container {
+      position: fixed;
+      bottom: 68px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .floating-mic-btn {
+      pointer-events: auto;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 4px solid var(--surface);
+      background: var(--primary-gradient);
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    .floating-mic-btn.listening {
+      background: var(--danger);
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.15); box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); }
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 65px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 200;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    /* Bottom Navigation Bar */
     nav {
       position: fixed;
       bottom: 0;
@@ -300,8 +345,8 @@
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-around;
-      padding: 8px 0;
-      z-index: 100;
+      padding: 10px 0;
+      z-index: 90;
     }
 
     .nav-btn {
@@ -311,46 +356,35 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       gap: 4px;
       cursor: pointer;
       flex: 1;
     }
 
-    .nav-btn.active {
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
+    .nav-btn.active { color: var(--primary); font-weight: 700; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
   </style>
 </head>
 <body data-theme="light">
 
   <header>
-    <h1>Ab's Xpense Tracker</h1>
+    <div class="brand">
+      <div class="brand-badge">AXT</div>
+      <h1>Ab's Xpense Tracker</h1>
+    </div>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
       <i class="fa-solid fa-moon"></i>
     </button>
   </header>
 
+  <div id="toast" class="toast">Expense Added!</div>
+
   <div class="container">
     
-    <!-- Tab 1: Dashboard / Home -->
+    <!-- Tab 1: Home Dashboard -->
     <div id="tab-home" class="tab-content active">
-      <div class="card voice-section">
-        <button class="mic-btn" id="micBtn" onclick="toggleVoiceInput()">
-          <i class="fa-solid fa-microphone"></i>
-        </button>
-        <p class="voice-hint" id="voiceStatus">Tap mic and say: "Petrol 200" or "Lunch 150"</p>
-      </div>
-
       <div class="summary-grid">
         <div class="stat-card">
           <div class="stat-label">Total Spent</div>
@@ -363,10 +397,10 @@
       </div>
 
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px;">Quick Manual Add</h3>
+        <h3 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 700;">Add Expense</h3>
         <form id="expenseForm" onsubmit="addManualExpense(event)">
           <div class="form-group">
-            <input type="text" id="expDesc" placeholder="Item Name / Detail" required />
+            <input type="text" id="expDesc" placeholder="Item Name (e.g., Petrol, Grocery, Dinner)" required />
           </div>
           <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <input type="number" id="expAmount" placeholder="Amount (₹)" required />
@@ -380,7 +414,7 @@
       </div>
 
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px;">Recent Expenses</h3>
+        <h3 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 700;">Recent Expenses</h3>
         <div id="recentExpenseList"></div>
       </div>
     </div>
@@ -389,10 +423,10 @@
     <div id="tab-calendar" class="tab-content">
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 id="calMonthYear" style="font-size: 1rem;">Calendar</h3>
+          <h3 id="calMonthYear" style="font-size: 1rem; font-weight: 700;">Calendar</h3>
           <div style="display: flex; gap: 8px;">
-            <button class="btn-secondary" style="padding: 4px 10px; border-radius: 6px;" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="btn-secondary" style="padding: 4px 10px; border-radius: 6px;" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            <button class="btn-secondary" style="padding: 4px 10px; border-radius: 8px;" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="btn-secondary" style="padding: 4px 10px; border-radius: 8px;" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
           </div>
         </div>
         <div class="calendar-grid" id="calendarDays"></div>
@@ -404,20 +438,20 @@
       </div>
     </div>
 
-    <!-- Tab 3: Analytics & Reports -->
+    <!-- Tab 3: Analytics & Export -->
     <div id="tab-analytics" class="tab-content">
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 style="font-size: 1rem;">Monthly Overview</h3>
+          <h3 style="font-size: 1rem; font-weight: 700;">Monthly Report</h3>
           <button class="btn-success" style="padding: 6px 12px; font-size: 0.8rem; width: auto;" onclick="exportToExcel()">
             <i class="fa-solid fa-file-excel"></i> Export Excel
           </button>
         </div>
-        <canvas id="expensePieChart" style="max-height: 250px;"></canvas>
+        <canvas id="expensePieChart" style="max-height: 240px;"></canvas>
       </div>
 
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px;">Category Budgets & Limits</h3>
+        <h3 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 700;">Category Budgets</h3>
         <div id="categoryBudgetList"></div>
       </div>
     </div>
@@ -425,24 +459,31 @@
     <!-- Tab 4: Settings & Categories -->
     <div id="tab-settings" class="tab-content">
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px;">Manage Categories & Budget</h3>
+        <h3 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 700;">Manage Categories & Budget</h3>
         <form onsubmit="addNewCategory(event)">
           <div class="form-group">
-            <input type="text" id="newCatName" placeholder="Category Name (e.g., Solar, Rent)" required />
+            <input type="text" id="newCatName" placeholder="Category Name (e.g. Fuel, Grocery, Rent)" required />
           </div>
           <div class="form-group">
-            <input type="number" id="newCatBudget" placeholder="Monthly Budget (₹)" required />
+            <input type="number" id="newCatBudget" placeholder="Monthly Budget (₹) [Optional]" />
           </div>
           <button type="submit" class="btn btn-primary"><i class="fa-solid fa-folder-plus"></i> Save Category</button>
         </form>
       </div>
 
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px;">Existing Categories</h3>
+        <h3 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 700;">Your Categories</h3>
         <div id="categoriesSettingsList"></div>
       </div>
     </div>
 
+  </div>
+
+  <!-- Bottom Floating Voice Mic -->
+  <div class="floating-mic-container">
+    <button class="floating-mic-btn" id="micBtn" onclick="toggleVoiceInput()">
+      <i class="fa-solid fa-microphone"></i>
+    </button>
   </div>
 
   <!-- Bottom Navigation -->
@@ -455,6 +496,7 @@
       <i class="fa-solid fa-calendar-days"></i>
       <span>Calendar</span>
     </button>
+    <div style="flex: 0.8;"></div> <!-- Center spacing for Mic -->
     <button class="nav-btn" onclick="switchTab('analytics', this)">
       <i class="fa-solid fa-chart-pie"></i>
       <span>Analytics</span>
@@ -466,30 +508,33 @@
   </nav>
 
   <script>
-    // State initialization
+    // State Initialization with 0 pre-filled dummy budgets
     let expenses = JSON.parse(localStorage.getItem('abs_expenses')) || [];
     let categories = JSON.parse(localStorage.getItem('abs_categories')) || [
-      { name: 'Food & Dining', budget: 8000 },
-      { name: 'Fuel & Travel', budget: 4000 },
-      { name: 'Utilities', budget: 5000 },
-      { name: 'Business', budget: 15000 },
-      { name: 'General', budget: 3000 }
+      { name: 'Food & Dining', budget: 0 },
+      { name: 'Fuel & Travel', budget: 0 },
+      { name: 'Utilities', budget: 0 },
+      { name: 'General', budget: 0 }
     ];
 
     let currentCalDate = new Date();
     let chartInstance = null;
 
-    // Set today's date in manual form
     document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
 
-    // LocalStorage helper
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
     function saveData() {
       localStorage.setItem('abs_expenses', JSON.stringify(expenses));
       localStorage.setItem('abs_categories', JSON.stringify(categories));
       renderAll();
     }
 
-    // Tab Navigation
     function switchTab(tabId, el) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -500,43 +545,39 @@
       if (tabId === 'calendar') renderCalendar();
     }
 
-    // Theme Toggle
     function toggleTheme() {
       const body = document.body;
       const isDark = body.getAttribute('data-theme') === 'dark';
       body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      document.getElementById('metaThemeColor').setAttribute('content', isDark ? '#ffffff' : '#090d16');
+      document.getElementById('metaThemeColor').setAttribute('content', isDark ? '#2563eb' : '#0b0f19');
       document.getElementById('themeToggle').innerHTML = isDark ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
       if (chartInstance) renderAnalytics();
     }
 
-    // Voice Processing (English/Hinglish parsing)
+    // High Precision Voice Parser for Hindi / English
     function toggleVoiceInput() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert('Voice recognition is not supported offline on this browser engine. Use Chrome.');
+        showToast('Voice recognition not supported offline in this browser');
         return;
       }
 
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRec();
-      recognition.lang = 'hi-IN'; // Works for Hindi & Indian English mixed sentences
+      recognition.lang = 'hi-IN';
       recognition.interimResults = false;
 
       const micBtn = document.getElementById('micBtn');
-      const voiceStatus = document.getElementById('voiceStatus');
-
       micBtn.classList.add('listening');
-      voiceStatus.innerText = 'Listening... Speak item and amount';
+      showToast('Listening... Bolna shuru karein');
 
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        voiceStatus.innerText = `Heard: "${transcript}"`;
-        parseAndAddVoiceExpense(transcript);
+        processVoiceCommand(transcript);
       };
 
       recognition.onerror = () => {
         micBtn.classList.remove('listening');
-        voiceStatus.innerText = 'Error capturing voice. Tap to retry.';
+        showToast('Voice recognize nahi hui. Dobara koshish karein.');
       };
 
       recognition.onend = () => {
@@ -546,42 +587,50 @@
       recognition.start();
     }
 
-    function parseAndAddVoiceExpense(text) {
-      // Extract numbers
+    function processVoiceCommand(text) {
       const numbers = text.match(/\d+/g);
       if (!numbers) {
-        alert('Could not detect an amount. Please say something like "Petrol 200"');
+        showToast(`Heard: "${text}" (Amount detect nahi hua)`);
         return;
       }
       const amount = parseFloat(numbers[numbers.length - 1]);
 
-      // Remove number and extract words for category matching
-      let desc = text.replace(amount, '').replace(/rupaye|rupees|rs|ka|mein|me|ko/gi, '').trim();
-      if (!desc) desc = "Voice Expense";
+      let cleanDesc = text
+        .replace(new RegExp(amount, 'g'), '')
+        .replace(/एड|add|रुपए|रुपये|rupees|rupaye|rs|ka|ki|ke|mein|me|ko|par|per/gi, '')
+        .trim();
 
-      // Match category intelligently
-      let selectedCat = categories[0].name;
-      const lowerText = text.toLowerCase();
-      for (let cat of categories) {
-        if (lowerText.includes(cat.name.toLowerCase())) {
-          selectedCat = cat.name;
+      if (!cleanDesc) cleanDesc = "Voice Expense";
+
+      let matchedCat = categories[0].name;
+      const lower = text.toLowerCase();
+      
+      for (let c of categories) {
+        if (lower.includes(c.name.toLowerCase())) {
+          matchedCat = c.name;
           break;
         }
       }
 
+      if (/petrol|diesel|cng|auto|uber|ola|bus|train|travel|flight/i.test(lower)) {
+        matchedCat = categories.find(c => /travel|fuel/i.test(c.name))?.name || matchedCat;
+      } else if (/khana|lunch|dinner|breakfast|hotel|chai|tea|coffee|cig|cigarette|botol|pani|grocery/i.test(lower)) {
+        matchedCat = categories.find(c => /food|dining|grocery/i.test(c.name))?.name || matchedCat;
+      }
+
       const newExp = {
         id: Date.now(),
-        desc: desc.charAt(0).toUpperCase() + desc.slice(1),
+        desc: cleanDesc.charAt(0).toUpperCase() + cleanDesc.slice(1),
         amount: amount,
-        category: selectedCat,
+        category: matchedCat,
         date: new Date().toISOString().split('T')[0]
       };
 
       expenses.unshift(newExp);
       saveData();
+      showToast(`Added: ₹${amount} for ${newExp.desc} (${matchedCat})`);
     }
 
-    // Manual Form Add
     function addManualExpense(e) {
       e.preventDefault();
       const desc = document.getElementById('expDesc').value;
@@ -593,16 +642,16 @@
       document.getElementById('expDesc').value = '';
       document.getElementById('expAmount').value = '';
       saveData();
+      showToast('Expense Added!');
     }
 
-    // Categories Management
     function addNewCategory(e) {
       e.preventDefault();
       const name = document.getElementById('newCatName').value.trim();
-      const budget = parseFloat(document.getElementById('newCatBudget').value);
+      const budget = parseFloat(document.getElementById('newCatBudget').value) || 0;
 
       if (categories.find(c => c.name.toLowerCase() === name.toLowerCase())) {
-        alert('Category already exists!');
+        showToast('Category already exists!');
         return;
       }
 
@@ -610,6 +659,7 @@
       document.getElementById('newCatName').value = '';
       document.getElementById('newCatBudget').value = '';
       saveData();
+      showToast('Category Saved!');
     }
 
     function deleteCategory(index) {
@@ -624,7 +674,6 @@
       saveData();
     }
 
-    // Render Lists and Dropdowns
     function renderDropdowns() {
       const select = document.getElementById('expCategory');
       select.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
@@ -637,15 +686,15 @@
         return;
       }
 
-      list.innerHTML = expenses.slice(0, 10).map(exp => `
+      list.innerHTML = expenses.slice(0, 15).map(exp => `
         <div class="expense-item">
           <div>
-            <div style="font-weight: 600; font-size: 0.95rem;">${exp.desc}</div>
+            <div style="font-weight: 700; font-size: 0.95rem;">${exp.desc}</div>
             <div style="font-size: 0.75rem; color: var(--text-muted);">${exp.category} • ${exp.date}</div>
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-weight: 700; color: var(--danger);">₹${exp.amount.toLocaleString('en-IN')}</span>
-            <i class="fa-solid fa-trash-can" style="color: var(--text-muted); cursor: pointer; font-size: 0.85rem;" onclick="deleteExpense(${exp.id})"></i>
+            <span style="font-weight: 800; color: var(--danger);">₹${exp.amount.toLocaleString('en-IN')}</span>
+            <i class="fa-solid fa-trash-can" style="color: var(--text-muted); cursor: pointer; font-size: 0.9rem;" onclick="deleteExpense(${exp.id})"></i>
           </div>
         </div>
       `).join('');
@@ -654,9 +703,9 @@
     function renderCategorySettings() {
       const list = document.getElementById('categoriesSettingsList');
       list.innerHTML = categories.map((c, i) => `
-        <div class="budget-item">
+        <div class="expense-item">
           <div>
-            <div style="font-weight: 600;">${c.name}</div>
+            <div style="font-weight: 700;">${c.name}</div>
             <div style="font-size: 0.75rem; color: var(--text-muted);">Budget: ₹${c.budget.toLocaleString('en-IN')}</div>
           </div>
           <i class="fa-solid fa-trash" style="color: var(--danger); cursor: pointer;" onclick="deleteCategory(${i})"></i>
@@ -664,7 +713,6 @@
       `).join('');
     }
 
-    // Calendar
     function renderCalendar() {
       const year = currentCalDate.getFullYear();
       const month = currentCalDate.getMonth();
@@ -721,7 +769,6 @@
       card.style.display = 'block';
     }
 
-    // Analytics & Budgets
     function renderAnalytics() {
       const currentMonthStr = new Date().toISOString().slice(0, 7);
       const monthlyExpenses = expenses.filter(e => e.date.startsWith(currentMonthStr));
@@ -732,26 +779,24 @@
         catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
       });
 
-      // Render Budgets Progress
       const budgetList = document.getElementById('categoryBudgetList');
       budgetList.innerHTML = categories.map(cat => {
         const spent = catTotals[cat.name] || 0;
-        const pct = Math.min(100, Math.round((spent / (cat.budget || 1)) * 100));
+        const pct = cat.budget > 0 ? Math.min(100, Math.round((spent / cat.budget) * 100)) : 0;
         const color = pct > 90 ? 'var(--danger)' : 'var(--primary)';
         return `
           <div style="margin-bottom: 12px;">
             <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 2px;">
               <span><strong>${cat.name}</strong></span>
-              <span>₹${spent.toLocaleString('en-IN')} / ₹${cat.budget.toLocaleString('en-IN')} (${pct}%)</span>
+              <span>₹${spent.toLocaleString('en-IN')} / ₹${cat.budget.toLocaleString('en-IN')} ${cat.budget > 0 ? `(${pct}%)` : ''}</span>
             </div>
             <div class="progress-bar-bg">
-              <div class="progress-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+              <div class="progress-bar-fill" style="width: ${cat.budget > 0 ? pct : 0}%; background: ${color};"></div>
             </div>
           </div>
         `;
       }).join('');
 
-      // Chart
       const ctx = document.getElementById('expensePieChart').getContext('2d');
       if (chartInstance) chartInstance.destroy();
 
@@ -761,25 +806,22 @@
       chartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: labels.length ? labels : ['No Expenses'],
+          labels: labels.length ? labels : ['No Expenses Recorded'],
           datasets: [{
             data: dataVals.length ? dataVals : [1],
-            backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
           }]
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 12 } }
-          }
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
         }
       });
     }
 
-    // Export to Excel (SheetJS)
     function exportToExcel() {
       if (expenses.length === 0) {
-        alert('No data to export!');
+        showToast('No data to export!');
         return;
       }
       const cleanData = expenses.map(e => ({
@@ -795,10 +837,9 @@
       XLSX.writeFile(workbook, "Abs_Xpense_Report.xlsx");
     }
 
-    // Render Global Stats
     function renderAll() {
       const total = expenses.reduce((acc, curr) => acc + curr.amount, 0);
-      const budget = categories.reduce((acc, curr) => acc + curr.budget, 0);
+      const budget = categories.reduce((acc, curr) => acc + (curr.budget || 0), 0);
 
       document.getElementById('totalSpent').innerText = `₹${total.toLocaleString('en-IN')}`;
       document.getElementById('totalBudget').innerText = `₹${budget.toLocaleString('en-IN')}`;
@@ -808,7 +849,6 @@
       renderCategorySettings();
     }
 
-    // Initial Load
     renderAll();
   </script>
 </body>
